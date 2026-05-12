@@ -82,6 +82,7 @@ from utilities.constants import (
     CLUSTER,
     CNV_TEST_SERVICE_ACCOUNT,
     CNV_VM_SSH_KEY_PATH,
+    DATA_SOURCE_NAME,
     ES_NONE,
     EXPECTED_CLUSTER_INSTANCE_TYPE_LABELS,
     FEATURE_GATES,
@@ -852,6 +853,17 @@ def rhel10_data_source_scope_session(golden_images_namespace):
     return DataSource(
         namespace=golden_images_namespace.name,
         name="rhel10",
+        client=golden_images_namespace.client,
+        ensure_exists=True,
+    )
+
+
+@pytest.fixture(scope="session")
+def latest_rhel_data_source_scope_session(golden_images_namespace):
+    """Provide the DataSource for the latest RHEL version supported on this architecture."""
+    return DataSource(
+        namespace=golden_images_namespace.name,
+        name=py_config["latest_instance_type_rhel_os_dict"][DATA_SOURCE_NAME],
         client=golden_images_namespace.client,
         ensure_exists=True,
     )
