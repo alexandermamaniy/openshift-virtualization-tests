@@ -56,6 +56,7 @@ from utilities.constants import (
     TIMEOUT_30MIN,
     U1_SMALL,
     Images,
+    S390X,
 )
 from utilities.hco import (
     ResourceEditorValidateHCOReconcile,
@@ -411,7 +412,7 @@ def rhel_vm_for_snapshot(
         client=admin_client,
         os_flavor=OS_FLAVOR_RHEL,
         vm_instance_type=VirtualMachineClusterInstancetype(client=admin_client, name=U1_SMALL),
-        vm_preference=VirtualMachineClusterPreference(client=admin_client, name=RHEL10_PREFERENCE),
+        vm_preference=VirtualMachineClusterPreference(client=admin_client, name=f"{RHEL10_PREFERENCE}.{S390X}"),
         data_volume_template=data_volume_template_with_source_ref_dict(
             data_source=rhel10_data_source_scope_session,
             storage_class=snapshot_storage_class_name_scope_module,
