@@ -69,6 +69,7 @@ from utilities.infra import (
 from utilities.storage import data_volume_template_with_source_ref_dict, get_downloaded_artifact, write_file_via_ssh
 from utilities.virt import VirtualMachineForTests, running_vm
 
+from utilities.logger import LOGGER
 LOGGER = logging.getLogger(__name__)
 LOCAL_PATH = f"/tmp/{Images.Cdi.QCOW2_IMG}"
 ROUTER_CERT_NAME = "router.crt"
@@ -418,6 +419,9 @@ def rhel_vm_for_snapshot(
             storage_class=snapshot_storage_class_name_scope_module,
         ),
     ) as vm:
+        preference = VirtualMachineClusterPreference(client=admin_client, name=f"{RHEL10_PREFERENCE}.{S390X}")
+        LOGGER.info(f"Using VM preference: {preference.name}")
+        LOGGER.info(f"VM spec preference: {vm.instance.spec.preference}")
         running_vm(vm=vm)
         yield vm
 
