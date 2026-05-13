@@ -6,6 +6,7 @@ from utilities.constants import (
     OS_FLAVOR_FEDORA,
     PREFERENCE_STR,
     RHEL9_PREFERENCE,
+    RHEL10_PREFERENCE,
     S390X,
 )
 
@@ -19,7 +20,7 @@ rhel_os_list = ["rhel-8-10", "rhel-9-6"]
 fedora_os_list = ["fedora-42"]
 centos_os_list = ["centos-stream-9"]
 
-instance_type_rhel_os_list = [RHEL9_PREFERENCE]
+instance_type_rhel_os_list = [RHEL9_PREFERENCE, RHEL10_PREFERENCE]
 instance_type_fedora_os_list = [OS_FLAVOR_FEDORA]
 instance_type_centos_os_list = [CENTOS_STREAM9_PREFERENCE]
 
