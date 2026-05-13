@@ -419,9 +419,17 @@ def rhel_vm_for_snapshot(
             storage_class=snapshot_storage_class_name_scope_module,
         ),
     ) as vm:
-        preference = VirtualMachineClusterPreference(client=admin_client, name=f"{RHEL10_PREFERENCE}.{S390X}")
-        LOGGER.info(f"Using VM preference: {preference.name}")
-        LOGGER.info(f"VM spec preference: {vm.instance.spec.preference}")
+        LOGGER.info(f"Debug: VM spec preference: {vm.instance.spec.preference}")
+
+        preference_name = f"{RHEL10_PREFERENCE}.{S390X}"
+        preference = VirtualMachineClusterPreference(client=admin_client, name=preference_name)
+        
+        LOGGER.info(f"Debug: Using VM preference: {preference_name}")
+        LOGGER.info(f"Debug: VM preference spec: {preference.instance.spec.to_dict()}")
+        
+        # Log specific firmware settings if they exist
+        if hasattr(preference.instance.spec, 'firmware'):
+            LOGGER.info(f"Debug: Firmware settings: {preference.instance.spec.firmware}")
         running_vm(vm=vm)
         yield vm
 
