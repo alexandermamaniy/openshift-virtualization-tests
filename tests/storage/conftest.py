@@ -57,6 +57,7 @@ from utilities.constants import (
     U1_SMALL,
     Images,
     S390X,
+    X86_64
 )
 from utilities.hco import (
     ResourceEditorValidateHCOReconcile,
@@ -68,6 +69,7 @@ from utilities.infra import (
 )
 from utilities.storage import data_volume_template_with_source_ref_dict, get_downloaded_artifact, write_file_via_ssh
 from utilities.virt import VirtualMachineForTests, running_vm
+from utilities.architecture import get_cluster_architecture
 
 from utilities.logger import LOGGER
 LOGGER = logging.getLogger(__name__)
@@ -398,6 +400,35 @@ def artifactory_config_map_scope_module(namespace):
         artifactory_config_map.clean_up()
 
 
+
+def get_arch_specific_preference(preference_name: str, client) -> str:
+
+    cluster_arch = get_cluster_architecture()
+
+    if cluster_arch == X86_64:
+        return preference_name
+    
+    # For arm64 and s390x, try the architecture-specific variant
+    arch_specific_name = f"{preference_name}.{cluster_arch}"
+    
+    # If client is provided, validate that the preference exists
+    if client:
+        try:
+            VirtualMachineClusterPreference(client=client, name=arch_specific_name).instance
+            LOGGER.info(f"Found architecture-specific preference: {arch_specific_name}")
+            return arch_specific_name
+        except Exception:
+            LOGGER.warning(
+                f"Architecture-specific preference '{arch_specific_name}' not found. "
+                f"Falling back to base preference '{preference_name}' (x86_64-only)"
+            )
+            return preference_name
+    
+    # Without client validation, assume the arch-specific variant exists
+    # This is the optimistic path for better performance
+    return arch_specific_name
+
+
 @pytest.fixture()
 def rhel_vm_for_snapshot(
     admin_client,
@@ -407,21 +438,23 @@ def rhel_vm_for_snapshot(
     snapshot_storage_class_name_scope_module,
 ):
     """Create a RHEL VM with using DataSource that supports snapshots"""
+    preference_name = get_arch_specific_preference(RHEL10_PREFERENCE, client=admin_client)
+    
+    LOGGER.info(f"Debug: Using preference: {preference_name}")
     with VirtualMachineForTests(
         name=rhel_vm_name,
         namespace=namespace.name,
         client=admin_client,
         os_flavor=OS_FLAVOR_RHEL,
         vm_instance_type=VirtualMachineClusterInstancetype(client=admin_client, name=U1_SMALL),
-        vm_preference=VirtualMachineClusterPreference(client=admin_client, name=f"{RHEL10_PREFERENCE}.{S390X}"),
+        vm_preference=VirtualMachineClusterPreference(client=admin_client, name=preference_name),
         data_volume_template=data_volume_template_with_source_ref_dict(
             data_source=rhel10_data_source_scope_session,
             storage_class=snapshot_storage_class_name_scope_module,
         ),
     ) as vm:
-        LOGGER.info(f"Debug: VM spec preference: {vm.instance.spec.preference}")
+        LOGGER.info(f"Debug: VM spec preference: {vm.instance.spec.preference.to_dict()}")
 
-        preference_name = f"{RHEL10_PREFERENCE}.{S390X}"
         preference = VirtualMachineClusterPreference(client=admin_client, name=preference_name)
         
         LOGGER.info(f"Debug: Using VM preference: {preference_name}")
