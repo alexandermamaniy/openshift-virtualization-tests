@@ -20,7 +20,7 @@ from ocp_resources.virtual_machine_snapshot import VirtualMachineSnapshot
 
 from tests.storage.constants import TEST_FILE_CONTENT, TEST_FILE_NAME
 from tests.storage.vm_export.utils import create_blank_dv_by_specific_user, get_manifest_from_vmexport, get_manifest_url
-from utilities.constants import OS_FLAVOR_RHEL, U1_SMALL, UNPRIVILEGED_PASSWORD, UNPRIVILEGED_USER
+from utilities.constants import OS_FLAVOR_RHEL, U1_SMALL, UNPRIVILEGED_PASSWORD, UNPRIVILEGED_USER, S390X, RHEL10_PREFERENCE
 from utilities.infra import create_ns, login_with_user_password
 from utilities.storage import data_volume_template_with_source_ref_dict, write_file_via_ssh
 from utilities.virt import VirtualMachineForTests, running_vm
@@ -149,6 +149,7 @@ def vm_from_vmexport(
         name="target-vm",
         namespace=namespace_vmexport_target.name,
         os_flavor=OS_FLAVOR_RHEL,
+        # vm_preference=VirtualMachineClusterPreference(name=f"{RHEL10_PREFERENCE}.{S390X}"),
         yaml_file=vm_yaml_file,
     ) as target_vm:
         yield target_vm
@@ -209,7 +210,7 @@ def rhel_vm_for_snapshot_with_content(
         client=unprivileged_client,
         os_flavor=OS_FLAVOR_RHEL,
         vm_instance_type=VirtualMachineClusterInstancetype(name=U1_SMALL),
-        vm_preference=VirtualMachineClusterPreference(name="rhel.10"),
+        vm_preference=VirtualMachineClusterPreference(name=f"{RHEL10_PREFERENCE}.{S390X}"),
         data_volume_template=data_volume_template_with_source_ref_dict(
             data_source=rhel10_data_source_scope_session,
             storage_class=snapshot_storage_class_name_scope_module,

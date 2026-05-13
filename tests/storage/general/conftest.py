@@ -10,7 +10,7 @@ from ocp_resources.virtual_machine_cluster_preference import VirtualMachineClust
 
 from tests.storage.cdi_import.utils import get_importer_pod_node, wait_dv_and_get_importer
 from tests.storage.constants import QUAY_FEDORA_CONTAINER_IMAGE
-from utilities.constants import OS_FLAVOR_FEDORA, REGISTRY_STR, TIMEOUT_5MIN, TIMEOUT_12MIN, U1_SMALL, Images
+from utilities.constants import OS_FLAVOR_FEDORA, REGISTRY_STR, TIMEOUT_5MIN, TIMEOUT_12MIN, U1_SMALL, Images, S390X
 from utilities.storage import create_dv, data_volume_template_with_source_ref_dict, get_dv_size_from_datasource
 from utilities.virt import VirtualMachineForTests, running_vm
 
@@ -57,7 +57,7 @@ def fedora_vm_with_instance_type(
         name="fedora-vm",
         namespace=namespace.name,
         client=unprivileged_client,
-        os_flavor=OS_FLAVOR_FEDORA,
+        os_flavor=f"{OS_FLAVOR_FEDORA}.{S390X}",
         vm_instance_type=VirtualMachineClusterInstancetype(name=U1_SMALL, client=unprivileged_client),
         vm_preference=VirtualMachineClusterPreference(name=OS_FLAVOR_FEDORA, client=unprivileged_client),
         data_volume_template=data_volume_template_with_source_ref_dict(
