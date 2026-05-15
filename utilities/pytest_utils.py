@@ -18,7 +18,6 @@ from pytest_testconfig import config as py_config
 from utilities.architecture import get_cluster_architecture
 from utilities.bitwarden import get_cnv_tests_secret_by_name
 from utilities.constants import (
-    X86_64,
     CNV_TEST_RUN_IN_PROGRESS,
     CNV_TEST_RUN_IN_PROGRESS_NS,
     CNV_TESTS_CONTAINER,
@@ -27,6 +26,7 @@ from utilities.constants import (
     SANITY_TESTS_FAILURE,
     TIMEOUT_2MIN,
     TIMEOUT_5MIN,
+    X86_64,
 )
 from utilities.data_collector import (
     collect_default_cnv_must_gather_with_vm_gather,
