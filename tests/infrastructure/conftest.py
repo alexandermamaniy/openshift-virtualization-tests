@@ -109,3 +109,13 @@ def latest_rhel_data_source(golden_images_namespace):
         namespace=golden_images_namespace.name,
         ensure_exists=True,
     )
+
+@pytest.fixture(scope="session")
+def latest_fedora_data_source(golden_images_namespace):
+    """Provide the DataSource for the latest Fedora version supported on this architecture."""
+    return DataSource(
+        namespace=golden_images_namespace.name,
+        name=py_config["latest_instance_type_fedora_os_dict"][DATA_SOURCE_NAME],
+        client=golden_images_namespace.client,
+        ensure_exists=True,
+    )
