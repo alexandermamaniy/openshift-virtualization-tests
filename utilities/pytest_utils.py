@@ -518,6 +518,9 @@ def generate_instance_type_matrix_dicts(os_dict: dict[str, Any], cpu_arch: str |
         py_config["instance_type_fedora_os_matrix"] = generate_linux_instance_type_os_matrix(
             os_name="fedora", preferences=instance_type_fedora_os_list, arch_suffix=cpu_arch
         )
+        py_config["latest_instance_type_fedora_os_dict"] = generate_latest_os_dict(
+            os_matrix=py_config["instance_type_fedora_os_matrix"]
+        )
     if instance_type_centos_os_list := os_dict.get("instance_type_centos_os_list"):
         py_config["instance_type_centos_os_matrix"] = generate_linux_instance_type_os_matrix(
             os_name="centos.stream",

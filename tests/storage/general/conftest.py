@@ -7,10 +7,11 @@ import logging
 import pytest
 from ocp_resources.virtual_machine_cluster_instancetype import VirtualMachineClusterInstancetype
 from ocp_resources.virtual_machine_cluster_preference import VirtualMachineClusterPreference
+from pytest_testconfig import config as py_config
 
 from tests.storage.cdi_import.utils import get_importer_pod_node, wait_dv_and_get_importer
 from tests.storage.constants import QUAY_FEDORA_CONTAINER_IMAGE
-from utilities.constants import OS_FLAVOR_FEDORA, REGISTRY_STR, TIMEOUT_5MIN, TIMEOUT_12MIN, U1_SMALL, Images
+from utilities.constants import OS_FLAVOR_FEDORA, PREFERENCE_STR, REGISTRY_STR, TIMEOUT_5MIN, TIMEOUT_12MIN, U1_SMALL,Images
 from utilities.storage import create_dv, data_volume_template_with_source_ref_dict, get_dv_size_from_datasource
 from utilities.virt import VirtualMachineForTests, running_vm
 
@@ -44,7 +45,7 @@ def fedora_data_volume(namespace, fedora_data_source_scope_module, storage_class
 def fedora_vm_with_instance_type(
     namespace,
     unprivileged_client,
-    fedora_data_source_scope_module,
+    latest_fedora_data_source_scope_session,
     storage_class_name_scope_function,
 ):
     """
@@ -59,9 +60,12 @@ def fedora_vm_with_instance_type(
         client=unprivileged_client,
         os_flavor=OS_FLAVOR_FEDORA,
         vm_instance_type=VirtualMachineClusterInstancetype(name=U1_SMALL, client=unprivileged_client),
-        vm_preference=VirtualMachineClusterPreference(name=OS_FLAVOR_FEDORA, client=unprivileged_client),
+        vm_preference=VirtualMachineClusterPreference(
+            name=py_config["latest_instance_type_fedora_os_dict"][PREFERENCE_STR],
+            client=unprivileged_client,
+        ),
         data_volume_template=data_volume_template_with_source_ref_dict(
-            data_source=fedora_data_source_scope_module,
+            data_source=latest_fedora_data_source_scope_session,
             storage_class=storage_class_name_scope_function,
         ),
     ) as vm:
