@@ -22,6 +22,7 @@ from utilities.architecture import get_cluster_architecture
 from utilities.bitwarden import get_cnv_tests_secret_by_name
 from utilities.constants import (
     AMD_64,
+    ARM_64,
     CNV_TEST_RUN_IN_PROGRESS,
     CNV_TEST_RUN_IN_PROGRESS_NS,
     CNV_TESTS_CONTAINER,
@@ -615,7 +616,7 @@ def update_cpu_arch_related_config(cpu_arch_option: str) -> None:
             generate_instance_type_matrix_dicts(os_dict=py_config["os_matrix"][arch], cpu_arch=arch)
         else:
             generate_common_template_matrix_dicts(os_dict=py_config)
-            if py_config["cluster_type"] != AMD_64:
+            if py_config["cluster_type"] == ARM_64:
                 generate_instance_type_matrix_dicts(os_dict=py_config, cpu_arch=arch)
             else:
                 generate_instance_type_matrix_dicts(os_dict=py_config)
